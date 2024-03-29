@@ -164,7 +164,6 @@ class Extractor:
             # change_stat = True if status == 'Not Started' else False
 
             for index, file in enumerate(files):
-                print(f"Scanning [{index+1} of {files_count}]: {file}...")
                 df_flaw = self.compose_file_flaws(file, zipobj)
                 df_fun = self.funcol.polulate_function_table(file, df_flaw)
 
@@ -188,6 +187,7 @@ class Extractor:
                     #     change_stat = False
 
                 if index+1 % self.refine_on_every == 0:
+                    print(f"Scanning [{index+1} of {files_count}]: {file}...")
                     print(f"\n#Files: {index + 1} file(s) completed!")
                     self.util.show_time_elapsed(start_time=self.start_time)
 
@@ -301,7 +301,7 @@ class Extractor:
 
     def run_extractor(self):
         """Add new projects to the database"""
-        status_of_all = ext.iterate_projects()
+        status_of_all = self.iterate_projects()
 
         if status_of_all:
             print("=" * 50)
@@ -318,7 +318,7 @@ class Extractor:
         self.db.cursor.close()
 
         # total time elapsed
-        time_elapsed = time.time() - ext.start_time
+        time_elapsed = time.time() - self.start_time
         print("\n" + "="*50)
         print(f"Total time elapsed: {format_timespan(time_elapsed)}")
         print("="*50)
