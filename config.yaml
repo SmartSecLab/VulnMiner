@@ -1,0 +1,40 @@
+# config file for data extraction from different C/C++ projects:
+projects: [
+/Users/guru/research/projects/ARMmbed,
+/Users/guru/research/projects/chromium,       
+/Users/guru/research/projects/linux,          
+/Users/guru/research/projects/tensorflow,
+/Users/guru/research/projects/CycloneTCP,     
+/Users/guru/research/projects/contiki-master, 
+/Users/guru/research/projects/mbed-os,        
+/Users/guru/research/projects/tinyos,
+/Users/guru/research/projects/FreeRTOS,       
+/Users/guru/research/projects/contiki,        
+/Users/guru/research/projects/micropython,    
+/Users/guru/research/projects/vlc,
+/Users/guru/research/projects/ImageMagick,    
+/Users/guru/research/projects/ffmpeg,         
+/Users/guru/research/projects/mosquitto,      
+/Users/guru/research/projects/wireshark,
+/Users/guru/research/projects/OpenCV,         
+/Users/guru/research/projects/gnucobol,       
+/Users/guru/research/projects/openwrt,
+/Users/guru/research/projects/OpenSSL,        
+/Users/guru/research/projects/httpd,          
+/Users/guru/research/projects/systemd,
+/Users/guru/research/projects/RIOT,           
+/Users/guru/research/projects/linux-rpi,      
+/Users/guru/research/projects/tcpdump,
+]
+save:
+  database: data/VulMinerV1.db
+  override: True
+  # override the existing files3
+  threshold_lines: 5
+  benign_ratio: 0.25
+  seed: 41
+  drop_dup: True
+  refine_on_every: 3000
+  # apply filtering after scanning the number of files
+  apply_guesslang: False
+  # do you want to use guess lang to classify files or use extension?

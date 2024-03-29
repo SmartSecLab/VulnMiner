@@ -38,7 +38,7 @@ pip install -r requirements.txt
 
 # Initial Release of VulnMiner Dataset
 
-The `VulnMiner` dataset is a collection of vulnerable codes from various Internet of Things (IoT) platforms. In the current version of the extracted dataset, there are 1,014,548 statements (948,996 benign and 65,052 vulnerable samples) and 548,089 functions (481,390 benign and 66,699 vulnerable samples). We have collected the vulnerable data from the following IoT platforms.
+The `VulnMiner` dataset is a collection of vulnerable codes from various projects. In the current version of the extracted dataset, there are 1,014,548 statements (948,996 benign and 65,052 vulnerable samples) and 548,089 functions (481,390 benign and 66,699 vulnerable samples). We have collected the vulnerable data from the following projects.
 
 ## Generic Projects
 

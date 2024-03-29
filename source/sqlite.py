@@ -14,7 +14,7 @@ from pathlib import Path
 import pandas as pd
 import yaml
 from tabulate import tabulate
-from extractor.utility import Utility
+from source.utility import Utility
 
 
 class Database:
@@ -94,7 +94,7 @@ class Database:
         """ creates a table for the projects to track their status """
         df = pd.DataFrame()
         try:
-            config = yaml.safe_load(open("config/extractor.yaml"))
+            config = yaml.safe_load(open("config.yaml"))
             projects = config["projects"]
 
             if self.table_exists('project') is False:
@@ -215,11 +215,3 @@ class Database:
             self.show_shape(table='function', project=project)
             self.show_cwe_benign(table='function')
             print("-" * 50 + "\n")
-
-
-if __name__ == "__main__":
-    db = Database('data/IoT.db')
-    db.create_project_table()
-    db.show_shape('project')
-    db.get_status('contiki-master')
-    db.table_exists('function')

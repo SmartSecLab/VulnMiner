@@ -23,7 +23,7 @@ from pathlib import Path
 from threading import Timer
 import numpy as np
 import pandas as pd
-from extractor.utility import Utility
+from source.utility import Utility
 class Analyzers:
     """This class applies static code analyzers via commands
     """
@@ -42,7 +42,8 @@ class Analyzers:
                               'cwe', 'context', 'helpuri', 'severity',
                               'tool', 'type'
                               ]
-        self.pl_list = ["c", "c++", "cpp", "cxx", "cp", "h"]
+        self.pl_list = ["c", "c++", "cpp", "cxx",
+                        "cp", "cc", "h", "hpp", "hxx", "hh"]
 
         self.util = Utility()
         self.config = config
