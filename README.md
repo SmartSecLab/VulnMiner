@@ -4,16 +4,7 @@
 
 # VulnMiner: A Comprehensive Framework for Vulnerability Detection in C/C++ Source Code
 
-In this study, we have presented an vulnerability data extraction tool to detect vulnerabilities in the C\C++ source code of several operating systems(OS) and software. The source code of major software was used to create a binary and multi-class labeled dataset including both vulnerable and benign samples.
-The vulnerability types presented in the extracted dataset are linked to the Common Weakness Enumeration (CWE) records.
-
-## Dataset extraction approach for vulnerability analysis
-
-The proposed method for vulnerability data collection is as follows:
-
-![framework](figure/framework.png?raw=true "The proposed framework for vulnerability data collection")
-
-Follow the vulnerability dataset extraction instruction as follows:
+In this study, we have presented an vulnerability data extraction tool to detect vulnerabilities in the C\C++ source code of several operating systems(OS) and software. The source code of major software was used to create a binary and multi-class labeled dataset including both vulnerable and benign samples. The vulnerability types presented in the extracted dataset are linked to the Common Weakness Enumeration (CWE) records.
 
 # Software Dependencies
 
