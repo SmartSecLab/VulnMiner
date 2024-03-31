@@ -1,21 +1,19 @@
 # -*- coding: utf-8 -*-
 """
-Copyright (C) 2023 SmartSecLab, Kristiania University College- All Rights Reserved
+Copyright (C) 2023 SmartSecLab, 
+Kristiania University College- All Rights Reserved
 You may use, distribute and modify this code under the
 terms of the MIT license.
 You should have received a copy of the MIT license with
 this file. If not, please write to: https://opensource.org/licenses/MIT
 @Programmer: Guru Bhandari
-"""
-"""
+
 Grepping functions from the vulnerability context of the file.
 Fetching the functions which have given line context/statement.
 """
 
-
-
-
 import os
+import json
 import subprocess as sub
 import xml.etree.ElementTree as et
 from io import StringIO
@@ -24,6 +22,8 @@ from threading import Timer
 import numpy as np
 import pandas as pd
 from source.utility import Utility
+
+
 class Analyzers:
     """This class applies static code analyzers via commands
     """
@@ -77,7 +77,7 @@ class Analyzers:
 
         return pl
 
-    ############################## Applying CppCheck tool ##############################
+    ##################### Applying CppCheck tool ##################
 
     def get_statement(self, file, line):
         statement = ""
@@ -87,7 +87,7 @@ class Analyzers:
                 if line < len(lines):
                     statement = lines[line]
         except Exception as exc:
-            print(f"Encoding Error: {exc}")
+            print(f"Encoding Error at CppCheck: {exc}")
         return statement
 
     def fetch_location(self, flaw: et.Element) -> dict:
@@ -124,20 +124,20 @@ class Analyzers:
     def xml2df_cppcheck(self, xml: str) -> pd.DataFrame:
         """convert xml str of cppcheck to dataframe"""
         df = pd.DataFrame()
-        try:
-            xtree = et.fromstring(xml)
-            for errors in xtree.findall(".//errors"):
-                for err in errors.findall("error"):
-                    dt_err = err.attrib
-                    # get the location of the vulnerable line content
-                    dt_err.update(self.fetch_location(err))
-                    df = pd.concat(
-                        [df, pd.DataFrame([dt_err])],
-                        ignore_index=True)
-            df = df.rename(columns={"file0": "file"}
-                           ).reset_index(drop=True)
-        except Exception as exc:
-            print(f"CppCheck parsing error: {exc}")
+        xtree = et.fromstring(xml)
+        for errors in xtree.findall(".//errors"):
+            for err in errors.findall("error"):
+                dt_err = err.attrib
+                # get the location of the vulnerable line content
+                dt_err.update(self.fetch_location(err))
+                df = pd.concat(
+                    [df, pd.DataFrame([dt_err])],
+                    ignore_index=True)
+        if len(df):
+            # df = df.rename(columns={"file0": "file"}
+            #                ).reset_index(drop=True)
+            df = df.drop(columns=["file0"], axis=1,
+                         errors="ignore").reset_index(drop=True)
         return df
 
     def apply_cppcheck(self, file: str) -> pd.DataFrame:
@@ -147,19 +147,22 @@ class Analyzers:
         cmd = "cppcheck -f " + file + " --xml --xml-version=2"
         # avoid shell=True, it works but doesn't stop at Timeout
         process = sub.Popen(cmd.split(), stdout=sub.PIPE, stderr=sub.STDOUT)
-        timer = Timer(2, process.kill)
-        try:
-            timer.start()
-            stdout, stderr = process.communicate()
-            df = self.xml2df_cppcheck(xml=stdout.decode("utf-8"))
-            df = self.correct_label(df)
-            # adding context since cppcheck does not report statement,
-            # index starts from zero, therefore row.line-1
-            df['context'] = ''
-            df['context'] = df.apply(
-                lambda row: self.get_statement(file, row.line-1), axis=1)
-        finally:
-            timer.cancel()
+        # timer = Timer(2, process.kill)
+        # try:
+        # timer.start()
+        stdout, stderr = process.communicate()
+        df = self.xml2df_cppcheck(xml=stdout.decode("utf-8"))
+        df = self.correct_label(df)
+        # adding context since cppcheck does not report statement,
+        # index starts from zero, therefore row.line-1
+        df['context'] = ''
+        df['context'] = df.apply(
+            lambda row: self.get_statement(file, row.line-1), axis=1)
+        df['file'] = file
+        # except Exception as exc:
+        #     print(f"CppCheck error: {exc}")
+        # finally:
+        #     timer.cancel()
         return df
 
 ######################### Applying FlawFinder tool ####################
@@ -197,14 +200,13 @@ class Analyzers:
     def xml2df_rats(xml) -> pd.DataFrame:
         """convert xml file of rats tool to dataframe"""
         df = pd.DataFrame()
-
         if isinstance(xml, str):
             xtree = et.fromstring(xml)
 
             for err in xtree.findall("vulnerability"):
                 dt = {
                     "severity": err.find("severity").text,
-                    "type": err.find("type").text if err.find("type") != None else None,
+                    "type": err.find("type").text if err.find("type") is not None else None,
                     "message": err.find("message").text,
                 }
                 for loc in err.findall("file"):
@@ -214,9 +216,11 @@ class Analyzers:
                         dt["line"] = line.text
                         df = pd.concat([df, pd.DataFrame([dt])],
                                        ignore_index=True)
-        return df.reset_index(drop=True)
+            if len(df):
+                df = df.reset_index(drop=True)
+        return df
 
-    def apply_rats(self, fname: str, xmlfile="output.xml") -> pd.DataFrame:
+    def apply_rats(self, fname: str) -> pd.DataFrame:
         """ The Rough Auditing Tool for Security is an open-source tool 
         developed by Secure Software Engineers
         https://security.web.cern.ch/recommendations/en/codetools/rats.shtml \
@@ -225,11 +229,11 @@ class Analyzers:
         """
         # rats --quiet --xml -w 3 <dir_or_file>
         cmd = ["rats --quiet --xml -w 3 " + fname]
-        process = sub.Popen(cmd, shell=True, stdout=sub.PIPE)
+        process = sub.Popen(cmd, shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
         try:
             output = process.stdout.read().decode("utf-8")
         except Exception as exc:
-            print(f"Rats: {exc}")
+            print(f"Error at Rats: {exc}")
 
         df = self.xml2df_rats(output)
 
@@ -238,11 +242,11 @@ class Analyzers:
             df["cwe"] = "CWE-unknown"
             df["line"] = df.line.astype(int)
             df["tool"] = "Rats"
-        return df.reset_index(drop=True)
+            df = df.reset_index(drop=True)
+        return df
 
 
-############################## Applying infer tool ##############################
-
+########################### Applying infer tool ##########################
 
     def json2df(self, file: str) -> pd.DataFrame:
         df = pd.DataFrame()
@@ -254,10 +258,8 @@ class Analyzers:
             print(f"json2df error [{exc}]: opening at:{file}")
         return df
 
-    # TODO: implementation of infer tool
-
     def apply_infer(self, fname: str) -> pd.DataFrame:
-        """find flaws in the file using infer tool"""
+        """TODO: find flaws in the file using infer tool"""
         infer_dir = 'infer-output'
 
         if os.path.isfile(fname):
@@ -278,11 +280,11 @@ class Analyzers:
 
         if len(df) > 0:
             df["tool"] = "infer"
-        return df.reset_index(drop=True)
+            df = df.reset_index(drop=True)
+        return df
 
 
 ########## Prerequisites for merging the output of all tools ###########
-
 
     @staticmethod
     def concat(*args):
@@ -310,7 +312,7 @@ class Analyzers:
             columns={"message": "msg", "type": "category"},
             errors="ignore")
 
-        # CppCheck: As we checked, 'msg' and 'verbose' columns have the same entries,
+        # CppCheck: 'msg' and 'verbose' columns with same entries,
         # so let's keep only 'msg'.
         df_cc = (df_cc.drop(
             columns=["verbose"],
@@ -329,7 +331,8 @@ class Analyzers:
         return df_ff, df_cc, df_rat
 
 
-############################## Merge the output of all tools ##############################
+######################## Merge the output of all tools #################
+
 
     def merge_tools_result(self, fname) -> pd.DataFrame:
         """merge dataframe generated by FlawFinder and CppCheck tools"""
@@ -394,14 +397,5 @@ class Analyzers:
             df_merged = df_merged.fillna("-")
             df_merged['context'] = df_merged.context.astype(str).str.strip()
             df_merged = df_merged[self.consider_cols]
+            df_merged['file'] = fname
         return df_merged
-
-
-# if __name__ == "__main__":
-#     test_file = "data/projects/contiki-2.4/apps/webbrowser/www.c"
-#     test_dir = "data/projects/contiki-2.4/"
-#     st = Analyzers()
-
-#     df_flaw = st.apply_flawfinder(test_file)
-#     # df_flaw = st.merge_tools_result(test_dir)
-#     print(df_flaw)
