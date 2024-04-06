@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Copyright (C) 2023 SmartSecLab, 
+Copyright (C) 2023 SmartSecLab,
 Kristiania University College- All Rights Reserved
 You may use, distribute and modify this code under the
 terms of the MIT license.
@@ -11,7 +11,7 @@ this file. If not, please write to: https://opensource.org/licenses/MIT
 Grepping functions from the vulnerability context of the file.
 Fetching the functions which have given line context/statement.
 """
-
+import time
 import os
 import json
 import subprocess as sub
@@ -19,6 +19,7 @@ import xml.etree.ElementTree as et
 from io import StringIO
 from pathlib import Path
 from threading import Timer
+from tabulate import tabulate
 import numpy as np
 import pandas as pd
 from source.utility import Utility
@@ -147,22 +148,22 @@ class Analyzers:
         cmd = "cppcheck -f " + file + " --xml --xml-version=2"
         # avoid shell=True, it works but doesn't stop at Timeout
         process = sub.Popen(cmd.split(), stdout=sub.PIPE, stderr=sub.STDOUT)
-        # timer = Timer(2, process.kill)
-        # try:
-        # timer.start()
-        stdout, stderr = process.communicate()
-        df = self.xml2df_cppcheck(xml=stdout.decode("utf-8"))
-        df = self.correct_label(df)
-        # adding context since cppcheck does not report statement,
-        # index starts from zero, therefore row.line-1
-        df['context'] = ''
-        df['context'] = df.apply(
-            lambda row: self.get_statement(file, row.line-1), axis=1)
-        df['file'] = file
-        # except Exception as exc:
-        #     print(f"CppCheck error: {exc}")
-        # finally:
-        #     timer.cancel()
+        timer = Timer(2, process.kill)
+        try:
+            timer.start()
+            stdout, stderr = process.communicate()
+            df = self.xml2df_cppcheck(xml=stdout.decode("utf-8"))
+            df = self.correct_label(df)
+            # adding context since cppcheck does not report statement,
+            # index starts from zero, therefore row.line-1
+            df['context'] = ''
+            df['context'] = df.apply(
+                lambda row: self.get_statement(file, row.line-1), axis=1)
+            df['file'] = file
+        except Exception as exc:
+            print(f"CppCheck error: {exc}")
+        finally:
+            timer.cancel()
         return df
 
 ######################### Applying FlawFinder tool ####################
@@ -221,19 +222,30 @@ class Analyzers:
         return df
 
     def apply_rats(self, fname: str) -> pd.DataFrame:
-        """ The Rough Auditing Tool for Security is an open-source tool 
+        """ The Rough Auditing Tool for Security is an open-source tool
         developed by Secure Software Engineers
         https://security.web.cern.ch/recommendations/en/codetools/rats.shtml \
-        For example: 
-        `rats --quiet --xml -w 3 data/projects/contiki-2.4/apps/` 
+        For example:
+        `rats --quiet --xml -w 3 data/projects/contiki-2.4/apps/`
         """
         # rats --quiet --xml -w 3 <dir_or_file>
         cmd = ["rats --quiet --xml -w 3 " + fname]
-        process = sub.Popen(cmd, shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
+        output = None
         try:
-            output = process.stdout.read().decode("utf-8")
+            process = sub.Popen(
+                cmd, shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
+            # output = process.stdout.read().decode("utf-8")
+            # err = process.stderr.read().decode("utf-8")
+            output, err = process.communicate()
+            if output:
+                output = output.decode("utf-8")
+            if err:
+                print(
+                    f"Error at Rats while parsing: {err.decode('utf-8')} on file: {fname}")
+                output = None
+
         except Exception as exc:
-            print(f"Error at Rats: {exc}")
+            print(f"Error at Rats: {exc} on file: {fname}")
 
         df = self.xml2df_rats(output)
 
@@ -243,10 +255,12 @@ class Analyzers:
             df["line"] = df.line.astype(int)
             df["tool"] = "Rats"
             df = df.reset_index(drop=True)
+            # print(tabulate(df, headers='keys', tablefmt='pretty'))
         return df
 
 
 ########################### Applying infer tool ##########################
+
 
     def json2df(self, file: str) -> pd.DataFrame:
         df = pd.DataFrame()
@@ -255,7 +269,7 @@ class Analyzers:
                 data = json.load(f)
             df = pd.DataFrame(data)
         except Exception as exc:
-            print(f"json2df error [{exc}]: opening at:{file}")
+            print(f"json2df error [{exc}]: opening at: {file}")
         return df
 
     def apply_infer(self, fname: str) -> pd.DataFrame:
@@ -286,7 +300,8 @@ class Analyzers:
 
 ########## Prerequisites for merging the output of all tools ###########
 
-    @staticmethod
+
+    @ staticmethod
     def concat(*args):
         """merge two columns of the dataframe with numpy vectorize method"""
         concat_str = ""
@@ -332,7 +347,6 @@ class Analyzers:
 
 
 ######################## Merge the output of all tools #################
-
 
     def merge_tools_result(self, fname) -> pd.DataFrame:
         """merge dataframe generated by FlawFinder and CppCheck tools"""

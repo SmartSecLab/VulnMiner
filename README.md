@@ -2,7 +2,7 @@
 [![data under CC BY 4.0 license](https://img.shields.io/badge/data%20license-CC%20BY%204.0-green)](https://creativecommons.org/licenses/by/4.0/)
 [![Open in Code Ocean](https://codeocean.com/codeocean-assets/badge/open-in-code-ocean.svg)](https://codeocean.com/capsule/0170549/tree)
 
-# VulnMiner: A Comprehensive Framework for Vulnerability Detection in C/C++ Source Code
+# VulnMiner: A Comprehensive Framework for Vulnerability Collection from C/C++ Source Code
 
 In this study, we have presented an vulnerability data extraction tool to detect vulnerabilities in the C\C++ source code of several operating systems(OS) and software. The source code of major software was used to create a binary and multi-class labeled dataset including both vulnerable and benign samples. The vulnerability types presented in the extracted dataset are linked to the Common Weakness Enumeration (CWE) records.
 
@@ -13,6 +13,7 @@ In this study, we have presented an vulnerability data extraction tool to detect
 - FlawFinder 2.0.19
 - Cppcheck 2.10.3
 - Clang Static Analyzer 15.0.0
+- RATS v2.4 - Rough Auditing Tool for Security
 
 ## Python Dependencies
 

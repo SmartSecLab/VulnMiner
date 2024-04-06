@@ -18,6 +18,7 @@ import requests
 import yaml
 from humanfriendly import format_timespan
 from zipfile import ZipFile
+from io import BytesIO
 
 warnings.filterwarnings("ignore")
 

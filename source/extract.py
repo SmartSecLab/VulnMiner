@@ -17,6 +17,8 @@ import os
 import signal
 import tempfile
 import time
+import threading
+import queue
 from pathlib import Path
 
 import pandas as pd
@@ -59,6 +61,9 @@ class Extractor:
         ]
         self.start_time = time.time()
         db_file = self.config['save']['database']
+        # create the directory if it does not exist
+        Path(db_file).parent.mkdir(parents=True, exist_ok=True)
+
         self.refine_on_every = self.config['save']['refine_on_every']
 
         self.db = Database()
@@ -104,11 +109,11 @@ class Extractor:
                     # skip the file
                     file_content = "".encode("utf-8")
                 except Exception as err:
-                    print(f"Error: {err} for file: {file}")
+                    print(f"Error reading file: {err} for file: {file}")
                     file_content = "".encode("utf-8")
         return file_content
 
-    def compose_file_flaws(self, file, zip_obj=None):
+    def compose_file_flaws(self, file, result_queue, zip_obj=None) -> pd.DataFrame():
         """convert zipped file stream - tempfile to pandas dataframe."""
         file_content = "".encode("utf-8")
         df_flaw = pd.DataFrame()
@@ -125,6 +130,7 @@ class Extractor:
             print(f"Could not open/read file: {err} at", file)
         finally:
             fp.close()
+
         return df_flaw
 
     def refine_data(self, table: str) -> pd.DataFrame():
@@ -165,8 +171,8 @@ class Extractor:
                   f"\nin given PL list types to extract: {self.sect.pl_list}")
         else:
             # change_stat = True if status == 'Not Started' else False
-
             for index, file in enumerate(files):
+                # print(f"Extracting file: {file}...")
                 df_flaw = self.compose_file_flaws(file, zipobj)
                 df_fun = self.funcol.polulate_function_table(file, df_flaw)
 
@@ -185,7 +191,12 @@ class Extractor:
                 self.save_file_data(df_flaw, df_fun)
 
                 if index % self.refine_on_every == 0:
+                    print('\n\n' + "="*40)
                     self.db.change_status(self.project, "In Progress")
+                    print(f"#Files: {index + 1}/{files_count} Completed!")
+                    self.db.show_shape('statement', self.project)
+                    self.db.show_shape('function', self.project)
+                    print("="*40 + '\n\n')
 
                 if index+1 % self.refine_on_every == 0:
                     print(f"#Files: {index + 1}/{files_count} Completed!")
