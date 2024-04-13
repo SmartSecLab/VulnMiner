@@ -12,8 +12,8 @@ In this study, we have presented an vulnerability data extraction tool to detect
 - pip 23.3.1
 - FlawFinder 2.0.19
 - Cppcheck 2.10.3
-- Clang Static Analyzer 15.0.0
 - RATS v2.4 - Rough Auditing Tool for Security
+- Clang Static Analyzer 15.0.0
 
 ## Python Dependencies
 
@@ -28,9 +28,19 @@ pip install pip==23.3.1
 pip install -r requirements.txt
 ```
 
+# Instruction to run data extractor
+
+Once required packages were installed, run the command to extract the vulnerability data from the given input projects as listed in `config.yaml`:
+
+```
+python3 -m source.extract
+```
+
+Once the execution of the script completes, it will save all the collected vulnerability data (statements and functions) to a database file as specified in `database` parameter in `config.yaml` file, i.e., `data/VulnMiner.db`.
+
 # Initial Release of VulnMiner Dataset
 
-The `VulnMiner` dataset is a collection of vulnerable codes from various projects. In the current version of the extracted dataset, there are 1,014,548 statements (948,996 benign and 65,052 vulnerable samples) and 548,089 functions (481,390 benign and 66,699 vulnerable samples). We have collected the vulnerable data from the following projects.
+The `VulnMiner.db` dataset is a collection of vulnerable codes from various projects. In the current version of the extracted dataset, there are 1,014,548 statements (948,996 benign and 65,052 vulnerable samples) and 548,089 functions (481,390 benign and 66,699 vulnerable samples). We have collected the vulnerable data from the following projects.
 
 ## Generic Projects
 

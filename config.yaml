@@ -1,40 +1,72 @@
 # config file for data extraction from different C/C++ projects:
 projects: [
-/Users/guru/research/projects/ARMmbed,
-/Users/guru/research/projects/chromium,       
-/Users/guru/research/projects/linux,          
-/Users/guru/research/projects/tensorflow,
-/Users/guru/research/projects/CycloneTCP,     
-/Users/guru/research/projects/contiki-master, 
-/Users/guru/research/projects/mbed-os,        
-/Users/guru/research/projects/tinyos,
-/Users/guru/research/projects/FreeRTOS,       
-/Users/guru/research/projects/contiki,        
-/Users/guru/research/projects/micropython,    
-/Users/guru/research/projects/vlc,
-/Users/guru/research/projects/ImageMagick,    
-/Users/guru/research/projects/ffmpeg,         
-/Users/guru/research/projects/mosquitto,      
-/Users/guru/research/projects/wireshark,
-/Users/guru/research/projects/OpenCV,         
-/Users/guru/research/projects/gnucobol,       
-/Users/guru/research/projects/openwrt,
-/Users/guru/research/projects/OpenSSL,        
-/Users/guru/research/projects/httpd,          
-/Users/guru/research/projects/systemd,
-/Users/guru/research/projects/RIOT,           
-/Users/guru/research/projects/linux-rpi,      
-/Users/guru/research/projects/tcpdump,
+# /cluster/home/guru/research/projects/CycloneTCP/third_party/,
+# /Users/guru/research/projects/chromium/ash,
+# ]
+# VulMinerV1 projects - Remote
+/cluster/home/guru/research/projects/ARMmbed,
+/cluster/home/guru/research/projects/chromium,       
+/cluster/home/guru/research/projects/linux,          
+/cluster/home/guru/research/projects/tensorflow,
+/cluster/home/guru/research/projects/CycloneTCP,     
+/cluster/home/guru/research/projects/contiki-master, 
+/cluster/home/guru/research/projects/mbed-os,        
+/cluster/home/guru/research/projects/tinyos,
+/cluster/home/guru/research/projects/FreeRTOS,       
+/cluster/home/guru/research/projects/contiki,        
+/cluster/home/guru/research/projects/micropython,    
+/cluster/home/guru/research/projects/vlc,
+/cluster/home/guru/research/projects/ImageMagick,    
+/cluster/home/guru/research/projects/ffmpeg,         
+/cluster/home/guru/research/projects/mosquitto,      
+/cluster/home/guru/research/projects/wireshark,
+/cluster/home/guru/research/projects/OpenCV,         
+/cluster/home/guru/research/projects/gnucobol,       
+/cluster/home/guru/research/projects/openwrt,
+/cluster/home/guru/research/projects/OpenSSL,        
+/cluster/home/guru/research/projects/httpd,          
+/cluster/home/guru/research/projects/systemd,
+/cluster/home/guru/research/projects/RIOT,           
+/cluster/home/guru/research/projects/linux-rpi,      
+/cluster/home/guru/research/projects/tcpdump,
 ]
+# local
+# /Users/guru/research/projects/ARMmbed,
+# /Users/guru/research/projects/chromium,       
+# /Users/guru/research/projects/linux,          
+# /Users/guru/research/projects/tensorflow,
+# /Users/guru/research/projects/CycloneTCP,     
+# /Users/guru/research/projects/contiki-master, 
+# /Users/guru/research/projects/mbed-os,        
+# /Users/guru/research/projects/tinyos,
+# /Users/guru/research/projects/FreeRTOS,       
+# /Users/guru/research/projects/contiki,        
+# /Users/guru/research/projects/micropython,    
+# /Users/guru/research/projects/vlc,
+# /Users/guru/research/projects/ImageMagick,    
+# /Users/guru/research/projects/ffmpeg,         
+# /Users/guru/research/projects/mosquitto,      
+# /Users/guru/research/projects/wireshark,
+# /Users/guru/research/projects/OpenCV,         
+# /Users/guru/research/projects/gnucobol,       
+# /Users/guru/research/projects/openwrt,
+# /Users/guru/research/projects/OpenSSL,        
+# /Users/guru/research/projects/httpd,          
+# /Users/guru/research/projects/systemd,
+# /Users/guru/research/projects/RIOT,           
+# /Users/guru/research/projects/linux-rpi,      
+# /Users/guru/research/projects/tcpdump,
+# ]
 save:
-  database: data/VulMinerV1.db
+  database: data/VulMinerV2.db
+  # database: data/test-new.db
   override: True
   # override the existing files3
   threshold_lines: 5
   benign_ratio: 0.25
   seed: 41
   drop_dup: True
-  refine_on_every: 3000
+  refine_on_every: 2000
   # apply filtering after scanning the number of files
   apply_guesslang: False
   # do you want to use guess lang to classify files or use extension?
