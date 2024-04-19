@@ -28,16 +28,26 @@ class Utility():
     This class does several supporting utility functions
     """
 
-    def load_config(self, yaml_file):
+    def load_config(self, yaml_file, args):
         """Load the yaml file and return a dictionary
         """
+        config = {}
         assert Path(yaml_file).is_file(), \
             f'The configuration file does not exist: {yaml_file}!'
         with open(yaml_file, "r") as stream:
             try:
-                return yaml.safe_load(stream)
+                config = yaml.safe_load(stream)
             except yaml.YAMLError as err:
-                return err
+                config = err
+
+        # Override config parameters with command-line arguments
+        if args:
+            if args.project:
+                config['projects'] = [args.project]
+            if args.database:
+                config['save']['database'] = args.database
+
+        return config
 
     def check_internet(self, url: str) -> bool:
         """check if the internet is working or not."""

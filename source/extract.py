@@ -24,6 +24,7 @@ from pathlib import Path
 import pandas as pd
 from humanfriendly import format_timespan
 from tabulate import tabulate
+from argparse import ArgumentParser
 
 # User defined modules
 from source.analyzers import Analyzers
@@ -42,11 +43,11 @@ def set_alarm():
 
 
 class Extractor:
-    def __init__(self):
+    def __init__(self, args):
         self.util = Utility()
         self.funcol = FunsCollector()
         self.config_file = "config.yaml"
-        self.config = self.util.load_config(self.config_file)
+        self.config = self.util.load_config(self.config_file, args)
 
         self.sect = Analyzers(self.config)
         self.pl_list = self.sect.pl_list
@@ -273,7 +274,7 @@ class Extractor:
 
     def iterate_projects(self):
         """iterate on every project"""
-        df_prj = self.db.save_project_meta()
+        df_prj = self.db.save_project_meta(self.config)
 
         df_prj_todo = df_prj[df_prj.status != 'Complete']
         project_links = df_prj_todo['project'].tolist()
@@ -335,5 +336,13 @@ class Extractor:
 
 
 if __name__ == "__main__":
-    ext = Extractor()
+    parser = ArgumentParser(
+        description="Extracting vulnerabilities from the project")
+    parser.add_argument("-p", "--project", help="Project directory")
+
+    parser.add_argument("-d", "--database", help="Database file")
+    parser.add_argument("-c", "--config", help="Config file")
+    args = parser.parse_args()
+
+    ext = Extractor(args)
     ext.run_extractor()

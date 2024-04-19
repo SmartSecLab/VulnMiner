@@ -90,11 +90,11 @@ class Database:
         else:
             print("All projects are already in the database!")
 
-    def save_project_meta(self):
+    def save_project_meta(self, config):
         """ creates a table for the projects to track their status """
         df = pd.DataFrame()
         try:
-            config = yaml.safe_load(open("config.yaml"))
+            # config = yaml.safe_load(open("config.yaml"))
             projects = config["projects"]
 
             if self.table_exists('project') is False:
