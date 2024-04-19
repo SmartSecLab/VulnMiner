@@ -36,6 +36,12 @@ Once required packages were installed, run the command to extract the vulnerabil
 python3 -m source.extract
 ```
 
+If you want to extract the vulnerability data from any source-code project and collect the data to the given SQLite3 database (overriding the `config.yaml` parameters). You can execute the command as follows-
+
+```
+python3 -m source.extract --project [project-dir] --database [db-name.db]
+```
+
 Once the execution of the script completes, it will save all the collected vulnerability data (statements and functions) to a database file as specified in `database` parameter in `config.yaml` file, i.e., `data/VulnMiner.db`.
 
 # Initial Release of VulnMiner Dataset
