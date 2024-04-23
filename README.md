@@ -1,6 +1,6 @@
 [![source under MIT licence](https://img.shields.io/badge/source%20license-MIT-green)](LICENSE.txt)
 [![data under CC BY 4.0 license](https://img.shields.io/badge/data%20license-CC%20BY%204.0-green)](https://creativecommons.org/licenses/by/4.0/)
-[![Open in Code Ocean](https://codeocean.com/codeocean-assets/badge/open-in-code-ocean.svg)](https://codeocean.com/capsule/0170549/tree)
+[![Open in Code Ocean](https://codeocean.com/codeocean-assets/badge/open-in-code-ocean.svg)](https://codeocean.com/capsule/1307710/tree)
 
 # VulnMiner: A Comprehensive Framework for Vulnerability Collection from C/C++ Source Code
 
@@ -46,7 +46,7 @@ Once the execution of the script completes, it will save all the collected vulne
 
 # Initial Release of VulnMiner Dataset
 
-The `VulnMiner.db` dataset is a collection of vulnerable codes from various projects. In the current version of the extracted dataset, there are 1,014,548 statements (948,996 benign and 65,052 vulnerable samples) and 548,089 functions (481,390 benign and 66,699 vulnerable samples). We have collected the vulnerable data from the following projects.
+The `VulnMiner.db` dataset is a collection of vulnerable codes from various projects. The current VulnMiner dataset has 2,263,907 statements (2,165,850 benign and 98,057 vulnerable) and 1,026,111 functions (922,473 benign and 103,638 vulnerable). Among all the projects analyzed, `linux` has the highest number of entries, totaling 1,193,381 statements and 451,021 functions, followed by `chromium` with 216,724 statements and 257,917 functions. While the size of vulnerability and weakness samples (statements and functions) reflects the severity of the projects, it's worth noting that larger projects like \emph{linux} may naturally harbor more vulnerable samples.
 
 ## Generic Projects
 
@@ -81,12 +81,9 @@ The `VulnMiner.db` dataset is a collection of vulnerable codes from various proj
 | mosquito   | 2.0.18    | https://github.com/eclipse/mosquitto  |
 | openwrt    | 23.05.2   | https://github.com/openwrt/openwrt    |
 
-Among all extracted projects, `linux-rpi` has the most recorded entries with 816,672 total statements and 456,380 functions, which is followed by `ARMmbed` with 43,782 statements and 26,095 functions. Of course, the severity of the project can be seen in the size of the vulnerability and weakness samples present in the project. However, `linux-rpi` being the biggest project in size in the list can tend to hold a higher number of vulnerable samples. The SQLite database file has three tables, namely `project` for project-level information, `statement` for statement-level information, and
-`function` for function-level information.
-
 ## Dataset Link
 
-The initial release of the extracted dataset can be accessible at [zenodo](https://zenodo.org/uploads/10203899) (with DOI:10.5281/zenodo.10203899).
+The initial release of the extracted dataset can be accessible at [zenodo](https://doi.org/10.5281/zenodo.11050380) and earlier IoT-Specific version of the dataset is available at [zenodo](https://doi.org/10.5281/zenodo.10203899).
 
 ## Acknowledgements
 
